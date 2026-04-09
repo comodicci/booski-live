@@ -1,5 +1,10 @@
-import "dotenv/config";
+import fs from "node:fs";
+import path from "node:path";
+import { config as loadEnv } from "dotenv";
 import { GhostMerchant } from "@ghostgate/sdk";
+
+const envPath = fs.existsSync(path.resolve(".env.local")) ? ".env.local" : ".env";
+loadEnv({ path: envPath });
 
 const appUrl = process.env.BOOSKI_PUBLIC_BASE_URL?.trim();
 const agentId = "18755";
@@ -41,3 +46,6 @@ console.log(JSON.stringify({
   canaryPath: result.config?.canaryPath ?? "/canary",
   endpointUrl: result.config?.endpointUrl ?? appUrl,
 }, null, 2));
+
+// `activate()` starts a heartbeat timer; stop it so this CLI command can exit cleanly.
+result.heartbeat?.stop?.();
